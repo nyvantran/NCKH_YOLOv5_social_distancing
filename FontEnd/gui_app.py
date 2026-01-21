@@ -52,7 +52,7 @@ class SurveillanceGUI(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle("Hệ thống Giám sát Đa camera - Giao diện Điều khiển")
-        self.setGeometry(100, 100, 1600, 900)
+        self.setGeometry(100, 100, 1800, 900)
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -103,10 +103,11 @@ class SurveillanceGUI(QMainWindow):
 
         right_layout.addWidget(QLabel("<h2>Nhật ký Tiếp xúc</h2>"))
         self.log_table = QTableWidget()
-        self.log_table.setColumnCount(6)
-        self.log_table.setHorizontalHeaderLabels(["Thời gian", "Camera", "ID 1", "ID 2", "Khoảng cách (m)", "TGTX"])
+        self.log_table.setColumnCount(7)
+        self.log_table.setHorizontalHeaderLabels(
+            ["Thời gian", "Camera", "ID 1", "ID 2", "Khoảng cách (m)", "TGTX", "Mật độ"])
         self.log_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
-        self.log_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
+        self.log_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.Stretch)
         self.log_table.setEditTriggers(QTableWidget.NoEditTriggers)
 
         right_layout.addWidget(self.log_table)
@@ -140,7 +141,7 @@ class SurveillanceGUI(QMainWindow):
             except Exception as e:
                 print(f"Error updating feed for {camera_id}: {e}")
 
-    def add_violation_log(self, camera_id, id1, id2, distance, timestamp, timeclose=1):
+    def add_violation_log(self, camera_id, id1, id2, distance, timestamp, timeclose=1, quantity_per_acre=123):
         row_position = 0
         self.log_table.insertRow(row_position)
         self.log_table.setItem(row_position, 0, QTableWidgetItem(timestamp))
@@ -149,8 +150,9 @@ class SurveillanceGUI(QMainWindow):
         self.log_table.setItem(row_position, 3, QTableWidgetItem(str(id2)))
         self.log_table.setItem(row_position, 4, QTableWidgetItem(f"{distance:.2f}"))
         self.log_table.setItem(row_position, 5, QTableWidgetItem(f"{timeclose:.2f}s"))
+        self.log_table.setItem(row_position, 6, QTableWidgetItem(f"{quantity_per_acre:.2f}"))
 
-        for i in range(5):
+        for i in range(7):
             self.log_table.item(row_position, i).setBackground(QColor(255, 100, 100, 100))
 
     def on_system_thread_finished(self):

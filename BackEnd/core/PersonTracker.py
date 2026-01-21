@@ -49,6 +49,7 @@ class PersonTracker:
         self.warned_pairs = set()
         self.colors = [tuple(np.random.randint(64, 255, 3).tolist()) for _ in range(100)]
         self.logger = logging.getLogger(f"Tracker-{camera_id}")
+        self.acreage = config.acreage
 
     def calculate_real_distance(self, center1, center2, height1, height2):
         xy_leg1 = (center1[0], center1[1] + height1 / 2)
@@ -120,7 +121,6 @@ class PersonTracker:
                                                         track2.height_pixels)
                 pair_key = tuple(sorted((id1, id2)))
                 self.distance_history[pair_key].append(distance)
-
                 if distance < self.SOCIAL_DISTANCE_THRESHOLD:
                     close_pairs_info.append(((id1, id2), distance))
                     close_frames = sum(1 for d in self.distance_history[pair_key] if d < self.SOCIAL_DISTANCE_THRESHOLD)
@@ -128,8 +128,8 @@ class PersonTracker:
                         close_time = close_frames / self.current_fps
                         if close_time >= self.WARNING_DURATION and pair_key not in self.warned_pairs:
                             self.warned_pairs.add(pair_key)
-
-                            newly_warned_pairs_data.append((id1, id2, distance, close_time))
+                            quantity_per_acre = len(active_tracks) / self.acreage if self.acreage > 0 else 0
+                            newly_warned_pairs_data.append((id1, id2, distance, close_time, quantity_per_acre))
 
                 else:
                     self.warned_pairs.discard(pair_key)

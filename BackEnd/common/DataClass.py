@@ -42,3 +42,4 @@ class CameraConfig:
     loop_video: bool = True
     frame_height: int = 480
     frame_width: int = 640
+    acreage: int = 50
